@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in, bottom=1in]{geometry}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% Header/Footer Configuration
+\pagestyle{fancy}
+\fancyhf{} % Clear all existing headers/footers
+\renewcommand{\headrulewidth}{0.4pt} % Header line width
+\renewcommand{\footrulewidth}{0.4pt} % Footer line width
+
+% Header
+\lhead{CS 4213 - Software Design Patterns}
+\chead{\textbf{Group H}}
+\rhead{Fall 2025}
+
+% Footer
+\lfoot{}
+\cfoot{}
+\rfoot{page \thepage/\pageref*{LastPage}}
+
+\lstdefinelanguage{mermaid}{
+  morekeywords={classDiagram, class, note, for},
+  sensitive=false,
+  morecomment=[l]{\%\%},
+  morestring=[b]",
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge \textbf{Pattern in action Prototype \\ Report} \par}
+
+    \vspace{3cm}
+
+    {\Large
+    \textbf{Class:} CS 4213 - Software Design Patterns \\
+    \textbf{Semester:} Fall 2025 \\
+
+    \vspace{2cm}
+    \textbf{Name:} Colby Frison, Emily Locklear, Grant Parkman, James Totah, Antonio Natusch Zarco \\
+    
+    \vspace{.4cm}
+    \textbf{Group:} H \\
+    \par}
+
+    \vfill
+
+    {\Large \date{} \par}
+
+\end{titlepage}
+
+\newpage
+\section{Introduction \& Problem Analysis}
+The goal of this assignment was to refactor the legacy \texttt{ModelManager} class in the SmartWrite application. The original implementation suffered from significant architectural flaws typical of monolithic design.
+
+\subsection{The ``Before'' State: Monolithic Design}
+In the original codebase, the \texttt{ModelManager} class was a ``God Object''. It handled:
+\begin{itemize}
+    \item State management (which model is active).
+    \item Error tracking (counting failures).
+    \item Fallback logic (deciding which model to try next).
+    \item \textbf{Specific implementation details} for every supported AI model (GPT-4, Claude, Gemini, etc.).
+\end{itemize}
+
+This design relied heavily on large \texttt{switch} statements to dispatch requests. Adding a new model required modifying the core \texttt{ModelManager} class, directly violating the \textbf{Open/Closed Principle}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Figs/Diagram_Before_Refactor.pdf}
+    \caption{Legacy ModelManager: Monolithic architecture with tightly coupled model logic and decision flow.}
+    \label{fig:before-refactor}
+\end{figure}
+
+
+\section{The Solution: Strategy Pattern}
+To resolve these issues, we applied the \textbf{Strategy Pattern}. This pattern allows us to define a family of algorithms (AI model implementations), encapsulate each one, and make them interchangeable.
+
+\subsection{The ``After'' State: Decoupled Architecture}
+The refactored architecture separates the \textit{management} of models from the \textit{execution} of models.
+
+\begin{itemize}
+    \item \textbf{Context (\texttt{ModelManager})}: Now purely responsible for configuration, error tracking, and selecting the active strategy. It treats all models uniformly via the strategy interface.
+    \item \textbf{Strategy Interface (\texttt{ModelStrategy})}: Defines the contract (\texttt{sendMessage}) that all models must adhere to.
+    \item \textbf{Concrete Strategies}: Individual classes (\texttt{GPT4Strategy}, \texttt{GPT35Strategy}, etc.) that contain the specific logic for each API.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{Figs/Diagram_After_Refactor.pdf}
+    \caption{Refactored ModelManager: Decoupled architecture with strategy interface and concrete strategies.}
+    \label{fig:after-refactor}
+\end{figure}
+
+\section{Key Resolves \& Benefits}
+The refactor achieved the following improvements:
+
+\begin{enumerate}
+    \item \textbf{Adherence to Open/Closed Principle}: We can now add new AI models (e.g., ``Claude 3.5'') by creating a new file \texttt{ClaudeStrategy.js} and registering it. We do \textbf{not} need to touch the \texttt{ModelManager} logic.
+    \item \textbf{Enhanced Testability}: We demonstrated this by creating an \texttt{UnstableStrategy} specifically for testing. This strategy is designed to fail, allowing us to verify the fallback logic without relying on unstable external APIs or modifying production code.
+    \item \textbf{Separation of Concerns}: The \texttt{ModelManager} focuses on \textit{reliability} (retries, fallbacks), while the Strategies focus on \textit{connectivity} (API calls).
+\end{enumerate}
+
+\end{document}
