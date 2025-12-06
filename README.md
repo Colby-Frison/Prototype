@@ -1,5 +1,7 @@
 # SmartWrite ModelManager Refactor – Strategy Pattern Demo
 
+SmartWrite repository: https://github.com/Colby-Frison/SmartWrite
+
 ## Overview
 This project demonstrates the **Strategy Design Pattern** in refactoring a monolithic AI ModelManager. By decoupling individual model logic from management and error handling, the code becomes more maintainable, extensible, and easier to test.
 
