@@ -6,6 +6,7 @@ class GPT4Strategy extends ModelStrategy {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 500));
         
+        // Simulate API response
         return {
             text: `GPT-4: I've analyzed your message "${message}" and here's my response...`,
             model: this.id,

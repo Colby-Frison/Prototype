@@ -5,6 +5,7 @@ class ModelStrategy {
         this.config = config;
     }
 
+    // Abstract method to send message
     async sendMessage(message) {
         throw new Error("Method 'sendMessage' must be implemented.");
     }

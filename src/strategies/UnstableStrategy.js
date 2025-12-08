@@ -1,5 +1,6 @@
 const ModelStrategy = require('./ModelStrategy');
 
+// This model is unstable is is made to randomly fail in order to test the fallback mechanism
 class UnstableStrategy extends ModelStrategy {
     async sendMessage(message) {
         console.log(`[${this.name}] Handling request: ${message}`);
